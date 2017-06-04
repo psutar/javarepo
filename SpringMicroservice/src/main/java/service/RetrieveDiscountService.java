@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import exception.CustomerException;
+import model.BadUser;
 import model.Customer;
 import model.Discount;
 import model.PurchasedProduct;
@@ -60,7 +62,9 @@ public class RetrieveDiscountService {
 		customer.put("1", cust);
 	}
 
-	public List<Discount> getSKUDiscount(String productId, String uuid) {
+	public List<Discount> getSKUDiscount(String productId, String uuid) throws CustomerException {
+		//TODO to test Bad users discounts
+		//CustomerException.throwException("ERR001", "Test Error");
 		List<Discount> discountList = new ArrayList<Discount>();
 		Customer customerDetails = getCustomerDetails(uuid);
 
@@ -70,10 +74,17 @@ public class RetrieveDiscountService {
 				if (purchasedProduct.getProductId().equals(productId)) {
 					discountList.add(purchasedProduct.getDiscountInfo());
 					return discountList;
+					
 				}
 			}
 		}
+		
 		return customerDetails.getEligibleDiscount();
+	}
+	
+	public BadUser getBaduserResponse(BadUser user){
+		return null;
+		
 	}
 
 	public Customer getCustomer(String uuid) {
@@ -81,9 +92,9 @@ public class RetrieveDiscountService {
 		for (String key : customer.keySet()) {
 			if ((customer.get(key).getUuid()).equals(uuid)) {
 				return customer.get(key);
-			} else
-				return null;
+			} 
 		}
+		System.out.println("Customer not Found");
 		return null;
 
 	}
